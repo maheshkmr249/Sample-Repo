@@ -1,1 +1,2 @@
 Hello Git, This is first line
+Second line is added feature-1
