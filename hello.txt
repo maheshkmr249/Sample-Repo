@@ -3,3 +3,4 @@ Second line is added feature-1
 Third line is added from feature-1
 fourth line is added from git repo
 fith line and its local
+sixth line info
