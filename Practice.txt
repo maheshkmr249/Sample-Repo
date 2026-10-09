@@ -1,0 +1,634 @@
+List<Map<String, String>> data = new ArrayList<>();
+
+Map<String, String> row1 = new HashMap<>();
+row1.put("username", "mahesh");
+row1.put("password", "mahesh@123");
+
+Map<String, String> row2 = new HashMap<>();
+row2.put("username", "rakesh");
+row2.put("password", rakesh123);
+
+data.add(row1);
+data.add(row2);
+ 
+-------------
+public class BaseTest{
+
+public WebDriver driver;
+
+@BeforeMethod
+public void launchBrowser(){
+driver = new ChromeDriver();
+driver.manage().window().maximize();
+driver.get("https://www.example.com");
+}
+
+@AfterMethod
+public void tearDown()
+{
+if(driver!=null)
+{
+driver.quit();
+}
+}
+}
+--------------------------
+public class LoginPage{
+
+private WebDriver driver;
+private By usernametxt = By.id("username");
+private By userPasswordtxt = By.id("password");
+private By loginButton = By.xpath("//span[text()='button']"); 
+
+public LoginPage(WebDriver driver)
+{
+This.driver = driver;
+}
+
+public void enterUsername(String username)
+{
+driver.findElement(usernametxt).sendKeys(username);
+}
+public void enterPassword(String password)
+{
+driver.findElement(userPasswordtxt).sendKeys(password);
+}
+public void click()
+{
+driver.findElement(loginButton).click();
+}
+}
+--------------------
+public class LoginTest extends TestBase{
+
+@Test
+public void validLogin()
+{
+LoginPage loginpage = new LoginPage(driver);
+loginpage.enterUsername("Maheshkmr123");
+loginpage.enterPassword("mahesh@123");
+loginpage.click();
+
+System.out.println("Title of the page is: "+driver.getTitle());
+}
+}
+---------------
+public interface UIActions{
+
+public void click(By locator);
+public void enterText(By locator, String text);
+public void selectDropdown(By locator, String value);
+
+}
+------------------
+public class SeleniumUIActions implements UIActions{
+
+Public SeleniumUIActions(WebDriver driver)
+{
+This.driver = driver;  
+}
+public void click(By locator)
+{
+driver.findElement(locator).click()
+}
+public void enterText(By locator, String value)
+{
+driver.findElement(locator).sendKeys(value);
+}
+public void selectDropdown(By locator, String value)
+{
+WebElement dropdown = driver.findElement(locator);
+Select select = new Select(dropdown);
+select.SelectByValue(value);
+}
+}
+------------
+public class waitUtils{
+public void waitForElement(By locator)
+{
+sopln("waiting for an element");
+}
+public void waitForElement(By locator, int timeout)
+{
+sopln("waiting for an element");
+}
+public void waitForElement(WebElement element, int timeout)
+{
+sopln("waiting for an element");
+}
+}
+----------------------
+waitUtils wait = new waitUtils();
+wait.waitForElement(username);
+wait.waitForElement(username, 20);
+wait.waitFoeElement(usernameElement, 30);
+--------------
+public class parentclass{
+
+public void click(By locator)
+{
+sopln("selenium click");
+}
+}
+
+public class childclass extends parentclass{
+
+@override
+public void click(By locator)
+{
+sopln("java script click");
+}
+}
+----------
+parentclass obj = new childclass();
+obj.click();
+--------------
+BaseURI="https:www.xyz.com";
+given()
+.when()
+.get("users/101")
+.then()
+.statusCode(200);
+.body("employee.name", equalTo("Mahesh"));
+.body("employee.address.city", equalTo("Hyderabad"));
+
+Response response = given().when().get("users/101")
+
+JsonPath jsonpath = response.JsonPath();
+String name = jsonpath.getString(employee.name);
+String city = jsonpath.getString(employee.address.city);
+Assert.assertEquals(name, "Mahesh");
+Assert.assertEquals(city, "Hyderabad")
+
+Map<String, String> user = response.jsonpath().getMap("user");
+Assert.assertEquals(user.get("name"), "mahesh");
+-------------------
+FileInputStream fis = new FileInputStream("path of the file");
+WorkBook workbook = new xssfworkbook(fis);
+Sheet sheet = workbook.getSheet(sheet1);
+Row row = sheet.getRow(1);
+String username = row.getCell(0).getStringCellValue();
+String password = row.getCell(1).getStringCellValue();
+wrokbook.close();
+fis.close();
+--------------
+items.item[0].name
+items.item[0].ppu
+items.item[0].batters
+items.item[0].batters.batter[0].id
+items.item[0].batters.batter[1].type
+items.item[0].topping[6].type
+
+JsonPath js = response.Jsonpath();
+
+
+List<String> batterTypes = js.getList("items.item[0].batters.batter.type");
+Sopln(batterTypes);
+
+List<Object> itemsSize = js.getList("items.item[0].topping");
+sopln(itemsSize.size());
+
+Assert.asserEquals(itemsSize, 7);
+------------
+API chaining
+
+RestAssured.BaseURI = "https://example.com";
+HashMap<String, Object> map = new HashMap<>();
+map.put("Empid", 101)
+map.put("Name", "Mahesh");
+map.put("Salary", 20000);
+map.put("Email", "mahesh@gmail.com");
+
+Response response =
+given()
+.body(map)
+.when()
+.post("/employee")
+.then()
+.statuscode(201);
+.extract().response();
+
+JsonPath js = response.JsonPath();
+int id = js.getInt(Empid);
+------------------------------
+given()
+.when()
+.get("/employee/"+id)
+.then()
+.statuscode(200);
+.body("Empid", equalTo(id))
+Assert.Equals(Empid, id);
+----------------------------
+WebDriver driver = new ChromeDriver();
+driver.get("https://www.example.com");
+List<WebElement> rows = driver.findElements(By.xpath("//table[@id=customers]//tr"));
+for(WebElement row : rows) 
+{
+List<WebElement> columns = row.findElements(By.xpath("./td | ./th"));
+for(WebElement column : columns)
+{
+System.out.print(column.getText() +" | ");
+}
+System.out.println();
+}
+--------------
+WebElement dropdown = driver.findElement(By.id("dropdown"));
+Select select = new Select(dropdown);
+select.SelectByVisibleText("Manual");
+List<WebElement> options = select.getOptioins();
+for(WebElement option : options)
+{
+sopln(option.getText());
+if(option.getText().equals("selenium"))
+{
+option.click();
+break;
+}
+}
+------------
+List<String> actualValues = new ArrayList<>();
+for(WebElement option : select.getOptions())
+{
+actualValues.add(option.getText());
+}
+sopln(actualValues);
+List<String> expectedValues = Arrays.asList<>("selenium", "Manual", "Auto");
+Assert.assertEquals(actualValues, expectedValues);
+-------------
+List<WebElement> suggestionList = driver.findElements(By.xpath("//[@role='sjdjj']/li"));
+for(int i=0;i<list.size();i++)
+{
+System.out.println(suggestionList.size());
+if(suggestionList.get(i).getText().equals("automation"))
+{
+suggestionList.get(i).click();
+break;
+}
+}
+--------------
+List<WebElement> links = driver.findElements(By.tagName("a"));
+sopln(links.size());
+int count =0;
+for(int i=0;i<links.size();i++)
+{
+sopln(links.get(i).getText());
+if(!links.get(i).getText().empty())
+{
+count++;
+}
+}
+sopln("Visible links count is: "+count);
+sopln("Hidden links count is: "+(links.size()-count));
+-------------------
+public class loginTest{
+
+@DataProvider(name = logindata)
+public Object[][] getData()
+{
+return new Object[][]{
+{"admin", "password"},
+{"user", "12345"},
+{"guest", guest123}
+}
+}
+}
+-------------
+public class mylistener implements ITestListener{
+@override
+public void onTestFailure(ITestResult result)
+{
+File src = ((TakeScreenShot)driver).getScreenshotAs(OutputType.File))
+FileUtils.copyFile(src, newFile("path"))
+}
+}
+-------------
+public class DropdownUtils{
+public static void SelectDropdown(WebElement dropdown, String visibleText)
+{
+Select select = new Select(dropdown);
+select.SelectByVisibleText(visibleText);
+}
+public static void SelectDropdown(WebElement dropdown, int index)
+{
+Select select = new Select(dropdown);
+select.SelectByIndex(index);
+}
+public static void SelectDropdown(WebElement dropdown, String value)
+{
+Select select = new Select(dropdown);
+select.SelectByValue(value);
+}
+}
+
+DropdownUtils.SelectDropdown(country, "India");
+DropdownUtils.SelectDropdown(country, 1);
+DropdownUtils.SelectDropdown(country, "US");
+--------------------------
+
+Method overriding
+
+public class ButtonClick{
+
+public void click(WebElement element)
+{
+sopln("Normal click");
+element.click();
+}
+}
+
+public class SeleniumClick extends ButtonClick{
+
+@ovveride
+public void click(WebElement element)
+{
+sopln("selenium click");
+element.click();
+}
+}
+
+public class JavaScriptClick extends ButtonClick{
+
+@ovveride
+public void click(WebElement element)
+{
+JavaScriptExecutor js = (JavaScriptExecutor)driver;
+js.exectueScript("arguments[0].click()", element);
+}
+
+}
+
+ButtonClick slClick = new SeleniumClick();
+slClick.click(loginbutton);
+
+ButtonClick jsClick = new JavaScriptClick();
+js.click(loginbutton);
+
+---------------------
+Print all employee names from all departments
+List<Map<String, Object>> departments = js.getList(company.departments);
+for(Map<String, Object> dept : departments)
+{
+List<Map<String, Object>> employees = (List<Map<String, Object>>) dept.get("employees");
+for(Map<String, Object>) emp : employees)
+{
+System.out.println(emp.get("name"));
+}
+}
+-----------
+Find all ongoing projects
+List<Map<String, Object>> projects = js.getList(companay.department[0].employee[0].projects);
+for(Map<String, Object> project : projects)
+{
+if(project.get("status").equals("ongoing"))
+{
+sopln(project.get("name"))
+}
+}
+-----------
+Calculate total client revenue
+List<Map<String, Object>> clients = js.getList(company.department[0].employee[0].clients)
+int total_revenue = 0;
+for(Map<String, Object> client : clients)
+{
+total_revenue = total_revenue+(Integer)client.get("Revenue"); 
+}
+sopln(total_revenue);
+-----------
+Count the total number of products
+int productcount = js.getList("products").size();
+sopln(productcount);
+-----------
+print only available products
+List<Map<String, Object>> products = js.getList("company.department[0].employee[0].products");
+for(List<String, Object> product : products)
+{
+if((Boolean)product.get("available"))
+{
+sopln(product.get("Name"));
+}
+}
+----------
+Find the employee with id = 2
+List<Map<String, Object>> employees = js.getList(company.department[0].employees)
+for(Map<String, Object> emp : employees)
+{
+if((Integer)emp.get("id")==2)
+{
+sopln(emp.get("Name"));
+sopln(emp.get("Role"));
+}
+}
+--------------
+parallel and crossbrowser using testNg
+
+public class BaseTest{
+WebDriver driver;
+public void launchBrowser(String browser){
+if(browser.equals("chrome"))
+{
+driver = new ChromeDriver();
+}
+else if(browser.equals("firefox"))
+{
+driver = new FirefoxDriver();
+}
+else if(browser.equals("edge"))
+{
+driver = new EdgeDriver();
+}
+driver.manage().window().maximize();
+}
+}
+Note: if you want to execute remotely then use below code in place of above driver
+ChromeOptions options = new ChromeOptions();
+Url url = new Url("https//localhost");
+driver= new RemoteWebDriver(options, url);
+
+Similarly for firefox and edge browsers maintain same
+-------
+public class LoginTest extends BaseTest{
+@Parameters(browser)
+
+@BeforeMethod
+public void setup(String browser)
+{
+launchBrowser(browser);
+}
+@Test
+public void googleTest()
+{
+driver.get("https://google.com");
+sopln(driver.getTitle());
+}
+@AfterMethod
+public void tearDown()
+{
+driver.quit();
+}
+}
+------
+<suite name ="cross browser suite"> or for parallel <suite name = "cross browser suite" parallel ="tests" thread-count=3>
+<test name = "login test">
+<parameter name = "browser" value="chrome"/>
+<classes>
+<class name = "test.loginTest"/>
+</classes>
+</test>
+<test name = "login test">
+<parameter name = "browser" value="firefox"/>
+<classes>
+<class name = "test.loginTest"/>
+</classes>
+</test>
+<test name = "login test">
+<parameter name = "browser" value="edge"/>
+<classes>
+<class name = "test.loginTest"/>
+</classes>
+</test>
+</suite>
+-----------------
+parallel and crossbrowser using bdd cucumber
+public class DriverFactory {
+private static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
+
+public static void initializeDriver(String browser)
+{
+if (browser.equalsIgnoreCase("chrome")) 
+{
+ChromeOptions options = new ChromeOptions();
+URL url = new URL("http://localhost:4444");
+driver.set(new RemoteWebDriver(url, options));
+}
+else if(browser.equalsIgnoreCase("firefox")) 
+{
+FirefoxOptions options = new FirefoxOptions();
+URL url = new URL("http://localhost:4444");
+driver.set(new RemoteWebDriver(url, options));
+}
+else if(browser.equalsIgnoreCase("edge")) 
+{
+EdgeOptions options = new EdgeOptions();
+URL url = new URL("http://localhost:4444");
+driver.set(new RemoteWebDriver(url, options));
+}
+else 
+{
+throw new RuntimeException("Invalid browser: " + browser);
+}
+getDriver().manage().window().maximize();
+}
+public static WebDriver getDriver() {
+return driver.get();
+}
+public static void quitDriver() {
+if (driver.get() != null) {
+driver.get().quit();
+driver.remove();
+}
+}
+}
+------
+public class Hooks {
+@Before
+public void setUp() throws MalformedURLException {
+String browser = System.getProperty("browser", "chrome");
+System.out.println("Running test on: " + browser);
+DriverFactory.initializeDriver(browser);
+}
+@After
+public void tearDown() {
+DriverFactory.quitDriver();
+}
+}
+----------
+public class LoginSteps {
+LoginPage loginPage;
+@Given("User is on the login page")
+public void user_is_on_login_page() {
+DriverFactory.getDriver().get("https://example.com/login");
+loginPage = new LoginPage(DriverFactory.getDriver());
+}
+@When("User enters username {string}")
+public void enter_username(String username) {
+loginPage.enterUsername(username);
+}
+@When("User enters password {string}")
+public void enter_password(String password) {
+loginPage.enterPassword(password);
+}
+@When("User clicks on Login button")
+public void click_login() {
+loginPage.clickLogin();
+}
+@Then("User should be successfully logged in")
+public void verify_login() {
+Assert.assertTrue(loginPage.isHomePageDisplayed(),"Home page is not displayed");
+}
+}
+-----------
+@CucumberOptions(
+features = "src/test/resources/features",
+glue = {
+        "stepdefinitions",
+        "hooks"
+    },
+plugin = {
+        "pretty",
+        "html:target/cucumber-report.html"
+    },
+monochrome = true
+)
+
+public class TestRunner extends AbstractTestNGCucumberTests {
+@Override
+@DataProvider(parallel = true)
+public Object[][] scenarios() {
+return super.scenarios();
+}
+}
+-------
+if you want to execute test in particular browser then type mvn test -Dbrowser=chrome
+if you want to execute test in all 3 browsers in parallel mode then prepare xml file like below
+<suite name="Cross Browser Suite" parallel="tests" thread-count="3">
+<test name="Chrome Test">
+<parameter name="browser" value="chrome"/>
+<classes>
+<class name="runners.TestRunner"/>
+</classes>
+</test>
+<test name="Firefox Test">
+<parameter name="browser" value="firefox"/>
+<classes>
+<class name="runners.TestRunner"/>
+</classes>
+</test>
+<test name="Edge Test">
+<parameter name="browser" value="edge"/>
+<classes>
+<class name="runners.TestRunner"/>
+</classes>
+</test>
+</suite>
+------------
+RequestSpecification reqspec = new RequestSpecBuilder()
+.setBaseUri("https://example.com")
+.setBasepath("/employee")
+.setContentType("application/json")
+.addQueryParam("department", "IT")
+.build();
+
+ResponseSpec resspec = new RseponseSpecBuilder()
+.expectStatusCode(201)
+.expectContentType("application/json")
+.expectResponseTime(LessThan(3000L))
+.build(); 
+
+given()
+.body(map)
+.spec(reqSpec)
+.when()
+.post()
+.then()
+.spec(resSpec)
+------------------
