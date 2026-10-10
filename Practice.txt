@@ -632,3 +632,41 @@ given()
 .then()
 .spec(resSpec)
 ------------------
+Using select class
+WebElement dropdown = driver.findElement(By.id("country"));
+Select select = new Select(dropdown);
+select.SelectByVisibleText("USA");
+String actual = select.getFirstSelectedOption().getText();
+Assert.assertEquals(actual, "USA");
+
+WebElement dropdown = driver.findElement(By.id("country"));
+Select select = new Select(dropdown);
+List<WebElement> options = select.getOptions();
+for(WebElement option : options)
+{
+sopln(option.getText());
+if(option.getText().equals("USA"))
+{
+option.getText().click();
+break;
+}
+String actual =  select.getFirstSelectedOption().getText();
+Assert.assertEquals(actual, "USA");
+}
+--------
+using custom dropdown
+driver.findElement(By.id("country")).click();
+List<WebElement> options = driver.findElements(By.xpath("//div/li"));
+for(WebElement option : options)
+{
+sopln(option.getText());
+if(option.getText().equals("USA"))
+{
+option.click();
+break;
+}
+} 
+WebElement selectedItem = wait.until(ExpectedConditions.VisibilityOfElementLocated(By.id("selectedDropdown")));
+String actualValue = selectedItem.getText().trim();
+Assert.assertEquals(actualValue, 'USA');
+sopln("Selected value verified successfully: "+actualValue);
