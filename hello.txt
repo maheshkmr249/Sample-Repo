@@ -6,4 +6,4 @@ fith line and its local
 sixth line info
 Adding seventh line from remote
 Adding 8th line from remote pull
-Adding 9th line from local to raise a conflict
+Adding 9th line from local to raise a conflict from local and remote
