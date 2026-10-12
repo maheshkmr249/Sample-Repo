@@ -8,3 +8,4 @@ Adding seventh line from remote
 Adding 8th line from remote pull
 Adding 9th line from local to raise a conflict from local and remote
 Adding 10th line via local and remote
+Adding 11th line via local
