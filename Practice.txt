@@ -670,3 +670,52 @@ WebElement selectedItem = wait.until(ExpectedConditions.VisibilityOfElementLocat
 String actualValue = selectedItem.getText().trim();
 Assert.assertEquals(actualValue, 'USA');
 sopln("Selected value verified successfully: "+actualValue);
+------
+if(response.statusCode()==401)
+{
+string newToken = TokenManager.RefreshToken();
+}
+----
+To run with test data contains only runMode as Y
+for (int i = 1; i <= sheet.getLastRowNum(); i++) 
+{
+String runMode = sheet.getRow(i).getCell(2).getStringCellValue();
+if (runMode.equalsIgnoreCase("Y")) {
+String username = sheet.getRow(i).getCell(0).getStringCellValue();
+String password = sheet.getRow(i).getCell(1).getStringCellValue();
+}
+}
+
+To skip specific row ex: row1 and row3
+for (int i = 1; i <= sheet.getLastRowNum(); i++) 
+{
+if (i == 3 || i == 5) 
+{
+continue;
+}
+// Read data
+}
+
+To skip empty rows
+Row row = sheet.getRow(i);
+if (row == null) 
+{
+continue;
+}
+or
+if(row.getCell(0) == null) 
+{
+continue;
+}
+----
+@Test(groups = {"Smoke"})
+public void login() {}
+
+@Test(groups = {"Regression"})
+public void payment() {}
+
+<groups>
+    <run>
+        <include name="Smoke"/>
+    </run>
+</groups>
