@@ -229,7 +229,8 @@ for(WebElement column : columns)
 {
 System.out.print(column.getText() +" | ");
 }
-System.out.println();
+System.out.println(); 
+
 }
 --------------
 WebElement dropdown = driver.findElement(By.id("dropdown"));
@@ -719,3 +720,191 @@ public void payment() {}
         <include name="Smoke"/>
     </run>
 </groups>
+
+-------------------------
+public class DBConnection {
+public static void main(String[] args) throws Exception {
+String url = "jdbc:mysql://localhost:3306/employee_db";
+String username = "root";
+String password = "root123";
+Connection con = DriverManager.getConnection(url, username, password);
+Statement stmt = con.createStatement();
+ResultSet rs = stmt.executeQuery("SELECT * FROM employees");
+while (rs.next()) {
+int id = rs.getInt("id");
+String name = rs.getString("name");
+int salary = rs.getInt("salary");
+System.out.println(id + " " + name + " " + salary);
+}
+rs.close();
+stmt.close();
+con.close();
+
+String uiName = driver.findElement(By.xpath("cdd")).getText();
+Assert.assertEquals(Dbname, UIName);
+
+}
+}
+---------
+Using DB util
+@Test
+public void validateEmployee() throws Exception {
+DBUtils.connect();
+ResultSet rs = DBUtils.executeQuery("SELECT name FROM employees WHERE id = 101");
+String dbName = "";
+if (rs.next()) {
+dbName = rs.getString("name");
+}
+String uiName = driver.findElement(By.id("employeeName")).getText();
+Assert.assertEquals(uiName, dbName);
+DBUtils.closeConnection();
+}
+----------
+WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+List<String> openedWindows = new ArrayList<>();
+// Capture parent window
+openedWindows.add(driver.getWindowHandle());
+// Open 4 child windows dynamically
+for (int i = 1; i <= 4; i++) {
+// Your action that opens a new window
+driver.findElement(By.id("openWindow" + i)).click();
+// Wait for one additional window
+int expectedCount = i + 1;
+wait.until(d -> d.getWindowHandles().size() >= expectedCount);
+// Identify newly opened window
+Set<String> currentWindows = driver.getWindowHandles();
+for (String handle : currentWindows) {
+if (!openedWindows.contains(handle)) {
+openedWindows.add(handle);
+break;
+}
+}
+}
+// Switch to 5th opened window
+driver.switchTo().window(openedWindows.get(4));
+System.out.println(driver.getTitle());
+------------
+
+public class Customer {
+
+  private String name;
+  private String email;
+  private String phoneno;
+  private String customerid;
+
+  public Customer(){
+  }
+  public Customer(String name, String email, String phoneno, String customerid)
+  {
+    this.name = name;
+    this.email = email;
+    this.phoneno = phoneno;
+    this.customerid = customerid;
+  }
+  
+  public void setName(String name)
+  {
+    this.name = name;
+  }
+  public String getName()
+  {
+    return name;
+  }
+  public void setEmail(String email)
+  {
+    this.email = email;
+  }
+  public String getEmail()
+  {
+    return email;
+  }
+  public void setPhoneno(String phoneno)
+  {
+    this.phoneno = phoneno;
+  }
+  public String getPhoneno()
+  {
+    return phoneno;
+  }
+  public void setCustomerId(String customerid)
+  {
+    this.customerid=customerid;
+  }
+  public String getCusomerId()
+  {
+    return customerid;
+  }
+  }
+}
+----------
+public class CustomerAPI{
+  public static Customer createCustomer()
+  {
+    String uniquId = UUID.randomUUID().toString().substring(0,8);
+    Customer requestData = new Customer
+    ("mahesh_"+uniqueId,
+     "mahesh_"+uniqueId+"@gmail.com",
+     "98833"+String.format("%05d", (int)(math.random()*100000))
+     );
+  
+ // Send POST request
+    Response response =
+    given()
+   .baseUri("https://your-api-url.com")
+   .contentType("application/json")
+   .body(requestData)
+   .when()
+   .post("/customers")
+   .then()
+   .statusCode(201)
+   .extract()
+   .response();
+
+// Deserialize response into POJO
+   Customer createdCustomer = response.as(Customer.class);
+   return createdCustomer;
+  }
+}
+----------
+we can access this using the following
+createdCustomer.getCustomerId();
+createdCustomer.getName();
+createdCustomer.getEmail();
+createdCustomer.getPhone();
+-----------
+public class CustomerTest {
+ WebDriver driver;
+ Customer customer;
+
+  @BeforeClass
+  public void setup() {
+  // Create customer using API
+     customer = CustomerAPI.createCustomer();
+
+ // Launch browser
+    driver = new ChromeDriver();
+    driver.manage().window().maximize();
+    driver.get("https://your-application.com");
+    }
+
+    @Test
+    public void verifyCustomerDetails() {
+ // Search using API-generated customer ID
+    driver.findElement(By.id("customerId")).sendKeys(customer.getCustomerId());
+    driver.findElement(By.id("search")).click();
+
+// Verify customer details
+    String actualName = driver.findElement(By.id("customerName")).getText();
+    String actualEmail = driver.findElement(By.id("customerEmail")).getText();
+    Assert.assertEquals(actualName, customer.getName());
+    Assert.assertEquals(actualEmail, customer.getEmail());
+    }
+
+    @AfterClass
+    public void tearDown() {
+
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+}

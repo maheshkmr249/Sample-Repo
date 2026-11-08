@@ -1,0 +1,42 @@
+public class DriverFactory {
+private static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
+public static void initDriver() {
+driver.set(new ChromeDriver());
+}
+public static WebDriver getDriver() {
+return driver.get();
+}
+public static void quitDriver() {
+driver.get().quit();
+driver.remove();
+}
+}
+-------------
+
+public class ScreenshotUtil {
+public static void captureScreenshot(WebDriver driver, String scenarioName) {
+File source = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+File destination = new File("screenshots/" + scenarioName + ".png");
+try {
+Files.copy(source.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+} 
+catch (IOException e) {
+e.printStackTrace();
+}
+}
+}
+----------
+
+public class Hooks {
+@Before
+public void setup() {
+DriverFactory.initDriver();
+}
+@After
+public void tearDown(Scenario scenario) {
+if (scenario.isFailed()) {
+ScreenshotUtil.captureScreenshot(DriverFactory.getDriver(), scenario.getName().replace(" ", "_"));
+}
+DriverFactory.quitDriver();
+}
+}
