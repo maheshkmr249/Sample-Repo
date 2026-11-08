@@ -1,0 +1,211 @@
+public class User {
+
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String password;
+    private String phone;
+
+    public User() {
+    }
+
+    public User(String firstName, String lastName, String email, String password, String phone) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.phone = phone;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+}
+---------
+import java.util.UUID;
+
+public class TestDataGenerator {
+
+    public static User generateUser() {
+
+        String uniqueId = UUID.randomUUID()
+                              .toString()
+                              .substring(0, 8);
+
+        User user = new User(
+            "Mahesh",
+            "Kumar",
+            "mahesh" + uniqueId + "@gmail.com",
+            "Test@12345",
+            "98765" + String.format("%05d",
+                (int)(Math.random() * 100000))
+        );
+
+        return user;
+    }
+}
+First Name : Mahesh
+Last Name  : Kumar
+Email      : mahesh8a91bc23@gmail.com
+Password   : Test@12345
+Phone      : 9876543210
+---------------------
+
+import static io.restassured.RestAssured.*;
+import static org.hamcrest.Matchers.*;
+
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+
+public class UserAPI {
+
+    public static User createUser(User user) {
+
+        Response response =
+            given()
+                .baseUri("https://your-api.com")
+                .contentType(ContentType.JSON)
+                .body(user)
+            .when()
+                .post("/api/users")
+            .then()
+                .statusCode(201)
+                .extract()
+                .response();
+
+        System.out.println("API Response: " +
+                           response.asPrettyString());
+
+        return response.as(User.class);
+    }
+}
+--------------
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+
+public class RegistrationPage {
+
+    WebDriver driver;
+
+    public RegistrationPage(WebDriver driver) {
+        this.driver = driver;
+    }
+
+    By firstName = By.id("firstName");
+    By lastName = By.id("lastName");
+    By email = By.id("email");
+    By password = By.id("password");
+    By phone = By.id("phone");
+    By registerButton = By.id("register");
+
+    public void registerUser(User user) {
+
+        driver.findElement(firstName)
+              .sendKeys(user.getFirstName());
+
+        driver.findElement(lastName)
+              .sendKeys(user.getLastName());
+
+        driver.findElement(email)
+              .sendKeys(user.getEmail());
+
+        driver.findElement(password)
+              .sendKeys(user.getPassword());
+
+        driver.findElement(phone)
+              .sendKeys(user.getPhone());
+
+        driver.findElement(registerButton)
+              .click();
+    }
+}
+-------------
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+public class UserRegistrationTest {
+
+    WebDriver driver;
+
+    @Test
+    public void createUserAndRegisterThroughUI() {
+
+        // Step 1: Generate dynamic data
+        User user = TestDataGenerator.generateUser();
+
+        // Step 2: Create user through API
+        User createdUser = UserAPI.createUser(user);
+
+        // Step 3: Validate API response
+        Assert.assertEquals(
+            createdUser.getEmail(),
+            user.getEmail()
+        );
+
+        System.out.println("User created successfully through API");
+
+        // Step 4: Launch browser
+        driver = new ChromeDriver();
+
+        driver.manage().window().maximize();
+
+        // Step 5: Open registration application
+        driver.get("https://your-application.com/register");
+
+        // Step 6: Pass API-created data into UI
+        RegistrationPage registration =
+            new RegistrationPage(driver);
+
+        registration.registerUser(createdUser);
+
+        // Step 7: Validate UI success message
+        String actualMessage = driver.findElement(
+            By.id("successMessage")
+        ).getText();
+
+        Assert.assertTrue(
+            actualMessage.contains("Registration successful")
+        );
+
+        driver.quit();
+    }
+}
