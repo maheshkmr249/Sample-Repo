@@ -120,7 +120,7 @@ public class UserAPI {
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
-public class RegistrationPage {
+public class RegistrationPage {                                               
 
     WebDriver driver;
 

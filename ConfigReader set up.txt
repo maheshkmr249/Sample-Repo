@@ -1,0 +1,133 @@
+src/test/resources/
+    config/
+        qa.properties
+        dev.properties
+        uat.properties
+        prod.properties
+
+baseUrl=https://qa.application.com
+username=qa_user
+password=qa_password
+browser=chrome
+apiUrl=https://qa-api.application.com
+
+baseUrl=https://dev.application.com
+username=dev_user
+password=dev_password
+browser=chrome
+apiUrl=https://dev-api.application.com
+
+baseUrl=https://uat.application.com
+username=uat_user
+password=uat_password
+browser=chrome
+apiUrl=https://uat-api.application.com
+
+baseUrl=https://application.com
+username=prod_user
+password=prod_password
+browser=chrome
+apiUrl=https://api.application.com
+
+
+public class configReader {
+private static Properties prop;
+public static void loadConfig(){
+String env = System.getProperty("env", "qa");
+prop = new Properties();
+String filePath = "src/test/resourses/config/"+env+".Properties";
+FileInputStream fis = new FileInputStream(filePath);
+prop.load(fis);
+sopln("loaded environment is: "+env);
+}
+public static String getProperty(String key){
+return prop.getProperty(key);
+}
+}
+
+public class BaseClass{
+WebDriver driver;
+@BeforeMethod
+public void  setup()
+{
+configReader.loadConfig();
+String browser = configReader.getProperty("browser");
+if(browser.equalIgnoreCase("Chrome"))
+{
+driver = new ChromeDriver();
+}
+driver.manage().window().maximize();
+driver.get(configReader.getProperty("baseUrl"));
+}
+@AfterMethod
+public void tearDown(){
+if(driver!=null)
+{
+driver.quit();
+}
+}
+}
+
+package pages;
+
+public class LoginPage {
+
+WebDriver driver;
+// Locators
+By username = By.id("user-name");
+By password = By.id("password");
+By loginButton = By.id("login-button");
+By homePageTitle = By.className("title");
+
+// Constructor
+public LoginPage(WebDriver driver) {
+this.driver = driver;
+}
+// Enter username
+public void enterUsername(String user) {
+driver.findElement(username).sendKeys(user);
+}
+// Enter password
+public void enterPassword(String pass) {
+driver.findElement(password).sendKeys(pass);
+}
+// Click login button
+public void clickLogin() {
+driver.findElement(loginButton).click();
+}
+// Complete login action
+public void login(String user, String pass) {
+enterUsername(user);
+enterPassword(pass);
+clickLogin();
+}
+// Get home page title
+public String getHomePageTitle() {
+return driver.findElement(homePageTitle).getText();
+}
+}
+
+package tests;
+
+import base.BaseClass;
+import config.ConfigReader;
+import pages.LoginPage;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+public class LoginTest extends BaseClass {
+@Test
+public void verifyValidLogin() {
+// Create LoginPage object
+LoginPage loginPage = new LoginPage(driver);
+// Read username and password
+String username = ConfigReader.getProperty("username");
+String password = ConfigReader.getProperty("password");
+// Perform login
+loginPage.login(username, password);
+// Validate successful login
+Assert.assertEquals(loginPage.getHomePageTitle(),"Products", "Login failed!");
+System.out.println("Login test passed successfully");
+}
+}
