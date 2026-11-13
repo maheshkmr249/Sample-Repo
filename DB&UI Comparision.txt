@@ -1,0 +1,31 @@
+public class dbUITest{
+WebDriver driver;
+
+@Test
+public void uiDbVerification{
+driver = new ChromeDriver();
+driver.get("https://www.xyz.com/userpage");
+String UiFname = driver.findElement(By.id("Fname")).getText();
+String UiLname = driver.findElement(By.id("Lname")).getText();
+String UiEmail = driver.findElement(By.id("Email")).getText();
+
+String url = "jdbc:mysql://localhost:3306/company";
+String username = "root";
+String password = "root";
+
+String query = select * from employee where empid = 101;
+Connection conn = DriverManager.getConnection();
+PreparedStatement psmt = conn.PreparedStatement(query);
+ResultSet rs = psmt.executeQuery();
+if(rs.next())
+String DbFname = rs.getString("First_name");
+String DbLname = rs.getString("Last_name");
+String DbEmail = rs.getString("Email");
+
+Assert.assertEquals(UiFname, DbFname); 
+Assert.assertEquals(UiLname, DbLname); 
+Assert.assertEquals(UiEmail, DbEmail); 
+
+sopln("DB and UI data is matched");
+}
+}
